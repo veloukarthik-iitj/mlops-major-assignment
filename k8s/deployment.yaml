@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: olivetti-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: olivetti
+  template:
+    metadata:
+      labels:
+        app: olivetti
+    spec:
+      containers:
+      - name: olivetti
+        image: <DOCKERHUB_USERNAME>/olivetti:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 5000
+          initialDelaySeconds: 20
+          periodSeconds: 20
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "256Mi"

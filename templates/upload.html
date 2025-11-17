@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Olivetti Face Predictor</title>
+    <meta charset="utf-8"/>
+  </head>
+  <body>
+    <h2>Upload a face image (64x64 grayscale recommended)</h2>
+    <form action="/predict" method="post" enctype="multipart/form-data">
+      <input type="file" name="file" accept="image/*" />
+      <button type="submit">Predict</button>
+    </form>
+    {% if result is defined %}
+      <h3>Predicted class: {{ result }}</h3>
+    {% endif %}
+  </body>
+</html>

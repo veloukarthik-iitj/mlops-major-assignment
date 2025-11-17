@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [ dev, docker_cicd ]
+
+jobs:
+  check_working_repo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run training
+        run: |
+          python train.py
+
+      - name: Check model file created
+        run: |
+          ls -lah models || true
+          test -f models/savedmodel.pth
+
+      - name: Run tests (evaluate saved model)
+        run: |
+          python test.py
