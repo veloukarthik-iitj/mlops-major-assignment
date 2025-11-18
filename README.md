@@ -53,3 +53,34 @@ Apply manifests in `k8s/` to deploy the app in a cluster (adjust image name).
 
 Notes
 - The model file is saved to `models/savedmodel.pth` by `train.py` using joblib. The `.pth` extension is a filename choice (it is a joblib file).
+ 
+Makefile and automation
+
+This repo includes a `Makefile` to automate common local dev tasks. Targets:
+
+- `make build` — build the Docker image locally (tag `olivetti:latest` by default).
+- `make load` — load the locally-built image into minikube so the cluster can use it.
+- `make deploy` — apply the k8s manifests in `k8s/`.
+- `make restart` — restart the deployment and wait for rollout to finish.
+- `make status` — show pod status for the app.
+- `make clean` — delete k8s resources and remove the local image.
+
+Quick local workflow:
+
+```bash
+# build, load into minikube, deploy and wait
+make build
+make load
+make deploy
+make restart
+make status
+```
+
+CI and deploy (GitHub Actions)
+
+Two workflow templates are included:
+
+- `.github/workflows/ci-build.yml` — runs on push, installs Python deps and runs tests, and builds the image on the runner (no push).
+- `.github/workflows/deploy.yml` — a manual (workflow_dispatch) workflow that can push the image to a registry and deploy manifests to a cluster when you provide registry credentials and a kubeconfig as encrypted secrets in the repo. Review the workflow and add the required secrets before enabling automatic deploys.
+
+If you'd like, I can help wire up GitHub Packages/ghcr or Docker Hub credentials and enable the deploy workflow.
