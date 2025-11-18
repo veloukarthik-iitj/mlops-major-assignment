@@ -21,17 +21,32 @@ jobs:
     - name: Install Python deps
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        python -m pip install -r requirements.txt
 
     - name: Run tests
-      run: pytest -q
+      run: python -m pytest -q
 
-    - name: Build Docker image (local runner)
-      run: |
-        docker build -t olivetti:ci-${{ github.sha }} .
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Build Docker image (buildx)
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        push: false
+        tags: olivetti:ci-${{ github.sha }}
+        load: true
 
     - name: Save image tar (optional artifact)
       if: always()
       run: |
         docker save olivetti:ci-${{ github.sha }} -o olivetti-${{ github.sha }}.tar
-        echo "Image saved to olivetti-${{ github.sha }}.tar"
+    - name: Upload image artifact
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: olivetti-image-${{ github.sha }}
+        path: olivetti-${{ github.sha }}.tar
