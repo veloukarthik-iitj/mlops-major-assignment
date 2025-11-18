@@ -32,4 +32,4 @@ jobs:
 
       - name: Run tests (evaluate saved model)
         run: |
-          python test.py
+          python -m pytest -v
