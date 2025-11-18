@@ -37,7 +37,7 @@ jobs:
         tags: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/olivetti:latest
 
     - name: Deploy to Kubernetes (requires KUBECONFIG secret)
-      if: ${{ secrets.KUBECONFIG }}
+      if: ${{ env.KUBECONFIG_BASE64 != '' }}
       env:
         KUBECONFIG_BASE64: ${{ secrets.KUBECONFIG }}
         DOCKER_USER: ${{ secrets.DOCKERHUB_USERNAME }}
