@@ -14,8 +14,8 @@ spec:
     spec:
       containers:
       - name: olivetti
-        image: <DOCKERHUB_USERNAME>/olivetti:latest
-        imagePullPolicy: Always
+        image: olivetti:latest
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5000
         readinessProbe:

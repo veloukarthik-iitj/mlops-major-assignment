@@ -12,7 +12,7 @@ RUN python -m pip install --upgrade pip && \
 COPY . /app
 
 # Expose port
-EXPOSE 5001
+EXPOSE 5000
 
 # Recommended: use gunicorn in production, here simple flask run
 CMD ["python", "app.py"]

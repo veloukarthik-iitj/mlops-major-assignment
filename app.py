@@ -48,4 +48,5 @@ def predict():
 
 if __name__ == '__main__':
     # For local debug only. In Docker/K8s use a production server like gunicorn.
-    app.run(host='0.0.0.0', port=5001)
+    # Run on port 5000 to match common defaults and k8s manifests
+    app.run(host='0.0.0.0', port=5000)
