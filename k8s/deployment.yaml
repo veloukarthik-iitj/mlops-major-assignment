@@ -14,7 +14,9 @@ spec:
     spec:
       containers:
       - name: olivetti
-        image: olivetti:latest
+        # Default to a registry-backed image so manifests are ready for other clusters.
+        # Replace with your Docker Hub username if different.
+        image: karthikvelouiitj/olivetti:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5000

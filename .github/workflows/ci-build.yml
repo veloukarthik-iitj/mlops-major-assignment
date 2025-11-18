@@ -18,10 +18,21 @@ jobs:
       with:
         python-version: '3.11'
 
+    - name: Cache pip
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
     - name: Install Python deps
       run: |
         python -m pip install --upgrade pip
         python -m pip install -r requirements.txt
+
+    - name: Ensure pytest is available
+      run: python -m pip install pytest
 
     - name: Run tests
       run: python -m pytest -q
@@ -40,10 +51,25 @@ jobs:
         tags: olivetti:ci-${{ github.sha }}
         load: true
 
+    - name: List Docker images (debug)
+      run: docker images --no-trunc || true
+
+    - name: Inspect built image (debug)
+      run: |
+        echo "Inspecting image olivetti:ci-${{ github.sha }}"
+        docker image inspect olivetti:ci-${{ github.sha }} || true
+
     - name: Save image tar (optional artifact)
       if: always()
       run: |
-        docker save olivetti:ci-${{ github.sha }} -o olivetti-${{ github.sha }}.tar
+        TAG=olivetti:ci-${{ github.sha }}
+        if docker image inspect "$TAG" >/dev/null 2>&1; then
+          docker save "$TAG" -o olivetti-${{ github.sha }}.tar
+          echo "Image saved to olivetti-${{ github.sha }}.tar"
+        else
+          echo "Image $TAG not found in runner, skipping save"
+        fi
+
     - name: Upload image artifact
       if: always()
       uses: actions/upload-artifact@v4

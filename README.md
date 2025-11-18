@@ -84,3 +84,45 @@ Two workflow templates are included:
 - `.github/workflows/deploy.yml` — a manual (workflow_dispatch) workflow that can push the image to a registry and deploy manifests to a cluster when you provide registry credentials and a kubeconfig as encrypted secrets in the repo. Review the workflow and add the required secrets before enabling automatic deploys.
 
 If you'd like, I can help wire up GitHub Packages/ghcr or Docker Hub credentials and enable the deploy workflow.
+
+Repository secrets and deployment (how-to)
+
+To enable the deploy workflow to push to Docker Hub and deploy to a cluster you need to add a few repository secrets.
+
+1) Create a Docker Hub access token
+
+- Sign in at https://hub.docker.com
+- Go to Account Settings -> Security -> New Access Token
+- Give it a name (for CI), create it and copy the token value (you will only see it once).
+
+2) Add GitHub repository secrets
+
+- In your GitHub repository go to Settings -> Security -> Secrets and variables -> Actions -> New repository secret.
+- Add the following secrets (exact names used by the workflow):
+	- `DOCKERHUB_USERNAME` — your Docker Hub username (for example `karthikvelouiitj`)
+	- `DOCKERHUB_TOKEN` — the access token you created above
+	- `KUBECONFIG` (optional) — the base64-encoded contents of your kubeconfig file if you want the workflow to deploy automatically to your Kubernetes cluster
+
+How to create the `KUBECONFIG` secret value (example on macOS / Linux):
+
+```bash
+# Encode kubeconfig to base64 and copy to clipboard (macOS)
+cat ~/.kube/config | base64 | pbcopy
+
+# Or just print the base64 to the terminal and paste it into the GitHub secret value
+cat ~/.kube/config | base64
+```
+
+Alternatively, you can add the raw kubeconfig as a secret and modify the workflow to use it directly, but the current workflow expects a base64 string.
+
+3) Optional: Update `k8s/deployment.yaml` to reference your Docker Hub image
+
+If you want your manifests to point to the Docker Hub image directly (so other clusters can pull it), edit `k8s/deployment.yaml` and set:
+
+```yaml
+image: your-dockerhub-username/olivetti:latest
+imagePullPolicy: IfNotPresent
+```
+
+Replace `your-dockerhub-username` with the value of `DOCKERHUB_USERNAME` (for example `karthikvelouiitj`). Then commit and push the change so the repo manifest matches the image in the registry.
+

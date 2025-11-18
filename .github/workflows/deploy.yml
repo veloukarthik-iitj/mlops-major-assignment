@@ -3,6 +3,11 @@ name: Manual deploy (push image and apply k8s)
 on:
   workflow_dispatch: {}
 
+# Required repository secrets (add these in GitHub Settings -> Secrets and variables -> Actions):
+# - DOCKERHUB_USERNAME : your Docker Hub username (e.g. karthikvelouiitj)
+# - DOCKERHUB_TOKEN    : a Docker Hub access token (create in Docker Hub account settings)
+# - KUBECONFIG         : (optional) base64-encoded kubeconfig to allow automatic deploy to your cluster
+
 jobs:
   publish-and-deploy:
     runs-on: ubuntu-latest
