@@ -34,8 +34,11 @@ jobs:
     - name: Ensure pytest is available
       run: python -m pip install pytest
 
+    - name: Train model (for tests)
+      run: python train.py
+
     - name: Run tests
-      run: python -m pytest -q
+      run: python -m pytest test.py -v
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
@@ -71,8 +74,9 @@ jobs:
         fi
 
     - name: Upload image artifact
-      if: always()
+      if: always() && hashFiles(format('olivetti-{0}.tar', github.sha)) != ''
       uses: actions/upload-artifact@v4
       with:
         name: olivetti-image-${{ github.sha }}
         path: olivetti-${{ github.sha }}.tar
+        if-no-files-found: ignore
