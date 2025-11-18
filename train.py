@@ -9,8 +9,8 @@ import joblib
 import numpy as np
 from sklearn.datasets import fetch_olivetti_faces
 from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score
+from sklearn.ensemble import RandomForestClassifier
 
 def main():
     data = fetch_olivetti_faces(shuffle=True, random_state=42)
@@ -22,7 +22,7 @@ def main():
         X, y, train_size=0.7, random_state=42, stratify=y
     )
 
-    clf = DecisionTreeClassifier(random_state=42)
+    clf = RandomForestClassifier(n_estimators=150, random_state=42, n_jobs=-1)
     clf.fit(X_train, y_train)
 
     os.makedirs('models', exist_ok=True)
